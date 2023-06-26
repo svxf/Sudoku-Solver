@@ -18,7 +18,7 @@ font_path = "font.ttf"
 font_size = 36
 font = pygame.font.Font(font_path, font_size)
 
-board = [
+original_board = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
     [0, 9, 8, 0, 0, 0, 0, 6, 0],
@@ -30,8 +30,11 @@ board = [
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
 
+board = [[col for col in row] for row in original_board]
+
 selected_cell = (0, 0)
 invalid_cell = False
+invalid_cell2 = False
 
 def draw_board():
     window.fill(WHITE)
@@ -58,7 +61,10 @@ def draw_board():
                 window.blit(number, (j * CELL_SIZE + 20, i * CELL_SIZE + 5))
 
     # selected cell
-    pygame.draw.rect(window, DARK_BLUE, (selected_cell[1] * CELL_SIZE, selected_cell[0] * CELL_SIZE, CELL_SIZE, CELL_SIZE), 3)
+    s_color = DARK_BLUE
+    if invalid_cell2:
+        s_color = RED
+    pygame.draw.rect(window, s_color, (selected_cell[1] * CELL_SIZE, selected_cell[0] * CELL_SIZE, CELL_SIZE, CELL_SIZE), 3)
 
 def solve(board):
     find = find_empty(board)
@@ -132,12 +138,16 @@ while running:
                 number = int(event.unicode)
                 if valid(board, number, selected_cell):
                     board[selected_cell[0]][selected_cell[1]] = number
-                    invalid_cell = False
+                    invalid_cell2 = False
                 else:
-                    invalid_cell = True
+                    invalid_cell2 = True
             elif event.key in (pygame.K_0, pygame.K_BACKSPACE):
                 board[selected_cell[0]][selected_cell[1]] = 0
+                invalid_cell2 = False
+            elif event.key == pygame.K_g:
+                board = [[col for col in row] for row in original_board]
                 invalid_cell = False
+                invalid_cell2 = False
 
     
     draw_board()
